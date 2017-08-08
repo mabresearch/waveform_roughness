@@ -2,7 +2,7 @@
 % GLAH14Dir. Finds similar i_rec_ndx values to correlate waveforms with
 % respective GLAH14 processed data.
 % Author: Max A Bowman
-% Version: 8/08/2017
+% Version: 8/02/2017
 tic
 % Get data files in data directory
 GLAH01Dir = '../data/01';
@@ -60,9 +60,7 @@ end
 % Filter out GLAH14 data with bad lon, lat, gain, or saturation
 valid = h5lon <= 360 & h5lat <= 90 & h5gain < 250 & h5saturation < 2;
 
-[den, ~] = size(valid);
-[num, ~] = size(find(valid));
-disp(100 - num / den * 100);
+
 
 h5lat = h5lat(valid);
 h5lon = h5lon(valid);
@@ -78,15 +76,13 @@ h5lon = h5lon - 180;
 common = intersect(GLAH01rec, GLAH14rec);
 
 % Now, correlate a couple of waveforms!!!
-% Pick a random index from common indices.
-% glah14second and glah01second now have one
-% second of ICESat data in associative arrays.
 glah14second = find(GLAH14rec == common(200));
 glah01second = find(GLAH01rec == common(200));
 
+c = 25;
+
 wv = waveforms(1:544, glah01second(c));
 wv(wv < 0.05 * max(wv)) = 0;
-
 plot(1:544, wv);
 title('Waveform');
 xlabel('Time (ns)');
