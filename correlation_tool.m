@@ -84,12 +84,15 @@ common = intersect(GLAH01rec, GLAH14rec);
 glah14second = find(GLAH14rec == common(200));
 glah01second = find(GLAH01rec == common(200));
 
-wv = waveforms(1:544, glah01second(c));
-wv(wv < 0.05 * max(wv)) = 0;
-
-plot(1:544, wv);
-title('Waveform');
-xlabel('Time (ns)');
-ylabel('Energy (volts)');
-
 toc
+% Graph a second of ICESat waveforms
+for index = 1:40
+    wv = waveforms(1:544, glah01second(index));
+    wv(wv < 0.05 * max(wv)) = 0;
+
+    plot(1:544, wv);
+    title([h5lat(glah14second(index)) h5lon(glah14second(index))]);
+    xlabel('Time (ns)');
+    ylabel('Energy (volts)');
+    pause(0.5);
+end
