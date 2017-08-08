@@ -52,7 +52,7 @@ for file = GLAH01Files'
         if times(end) > GLAH14Begin(index) && times(1) < GLAH14End(index)
             rec = h5read([GLAH01Dir filesep file.name], '/Data_40HZ/Time/i_rec_ndx');
             GLAH01rec = cat(1, GLAH01rec, rec);
-            waveforms = cat(1, waveforms, h5read([GLAH01Dir filesep file.name], '/Data_40HZ/Waveform/RecWaveform/r_rng_wf')); 
+            waveforms = cat(2, waveforms, h5read([GLAH01Dir filesep file.name], '/Data_40HZ/Waveform/RecWaveform/r_rng_wf')); 
         end
     end
 end
@@ -62,7 +62,7 @@ valid = h5lon <= 360 & h5lat <= 90 & h5gain < 250 & h5saturation < 2;
 
 [den, ~] = size(valid);
 [num, ~] = size(find(valid));
-disp(100 - num / den * 100);
+disp(['We have a ' num2str(100 - num / den * 100) '% data loss after filtering.']);
 
 h5lat = h5lat(valid);
 h5lon = h5lon(valid);
@@ -70,6 +70,9 @@ h5elev = h5elev(valid);
 h5saturation = h5saturation(valid);
 h5gain = h5gain(valid);
 GLAH14rec = GLAH14rec(valid);
+
+% Clear unecessary / temporary variables from the workspace
+clear valid num den times rec GLAH14Files GLAH01Files GLAH14Begin GLAH14End num14files
 
 % Change longitude range to [-180, 180]
 h5lon = h5lon - 180;
@@ -85,14 +88,15 @@ glah14second = find(GLAH14rec == common(200));
 glah01second = find(GLAH01rec == common(200));
 
 toc
-% Graph a second of ICESat waveforms
-for index = 1:40
-    wv = waveforms(1:544, glah01second(index));
-    wv(wv < 0.05 * max(wv)) = 0;
 
-    plot(1:544, wv);
-    title([h5lat(glah14second(index)) h5lon(glah14second(index))]);
-    xlabel('Time (ns)');
-    ylabel('Energy (volts)');
-    pause(0.5);
-end
+% Graph a second of ICESat waveforms
+% for index = 1:40
+%     wv = waveforms(1:544, glah01second(index));
+%     wv(wv < 0.05 * max(wv)) = 0; % filter out waveform noise
+% 
+%     plot(1:544, wv);
+%     title([h5lat(glah14second(index)) h5lon(glah14second(index))]);
+%     xlabel('Time (ns)');
+%     ylabel('Energy (volts)');
+%     pause(0.5);
+% end
